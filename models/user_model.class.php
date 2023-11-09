@@ -6,95 +6,94 @@
  * File: user_model.class.php
  * Description: User Model Class for connecting to SQL server
  */
-class UserModel
-{
-    //declare SQL Parameters
+class UserModel {
 
+    private $db;
     private $dbConnection;
-    private $tblUsers;
 
-//adds user into the user database
-    public function add_user($username, $password, $email, $firstname, $lastname)
-    {
-        $username = filter_var($username, FILTER_SANITIZE_STRING);
-        //filters the username value
-        $email = filter_var($email, FILTER_SANITIZE_STRING);
-        //filters the email value
-        $fName = filter_var($firstname, FILTER_SANITIZE_STRING);
-        //filters the First Name value
-        $lName = filter_var($lastname);
-        //filters the Last Name value
-        $password = password_hash($password, PASSWORD_DEFAULT);
-        //hashes the password value
-        $sql = "INSERT INTO `users` (`id`, `username`, `password`, `email`, `firstname`, `lastname`) VALUES($username,$password,$email,$fName,$lName)";
-        //SQL query
-        $query = $this->dbConnection->query($sql);
-        //sends the query
-        if ($query === true) {
-            $this->verify_user($username, $password);
-            //verifies the data using $username and $password
-            return true;
-        }
-        return false;
+    public function __construct() {
+        $this->db = Database::getInstance();
+        $this->dbConnection = $this->db->getConnection();
     }
 
-//verifies user against the database
-    public function verify_user($username, $password)
-    {
-        $username = filter_var($username, FILTER_SANITIZE_STRING);
-        //filters the username variable again. extra security
-        $sql = "SELECT * FROM $this->tblUsers WHERE username = '$username'";
-        //SQL query
-        $query = $this->dbConnection->query($sql);
-        //sends the query
-        if ($query->num_rows > 0) {
-            $user = $query->fetch_assoc();
-            //returns query as associative array
-            if (password_verify($password, $user['password'])) {
+    //add a user into the "users" table in the database
+    public function add_user() {
+        //retrieve password from the registration form
+        $password = trim(filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING));
 
-                setcookie('username', $username, time() + 3600, '/');
+        //hash the password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        //retrieve other user input from the registration form
+        $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
+        $lastname = filter_input(INPUT_POST, "lname", FILTER_SANITIZE_STRING);
+        $firstname = filter_input(INPUT_POST, 'fname', FILTER_SANITIZE_STRING);
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+
+        //construct an INSERT query
+        $sql = "INSERT INTO " . $this->db->getUserTable() . " VALUES(NULL, '$username', '$hashed_password', '$email', '$firstname', '$lastname')";
+
+        //execute the query and return true if successful or false if failed
+        if ($this->dbConnection->query($sql) === TRUE) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //verify username and password against a database record
+    public function verify_user() {
+        //retrieve username and password
+        $username = trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING));
+        $password = trim(filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING));
+
+        //sql statement to filter the users table data with a username
+        $sql = "SELECT password FROM " . $this->db->getUserTable() . " WHERE username='$username'";
+
+        //execute the query
+        $query = $this->dbConnection->query($sql);
+
+        //verify password; if password is valid, set a temporary cookie
+        if ($query and $query->num_rows > 0) {
+            $result_row = $query->fetch_assoc();
+            $hash = $result_row['password'];
+            if (password_verify($password, $hash)) {
+                setcookie("user", $username);
                 return true;
             }
-
         }
+
         return false;
-
-
     }
 
-//Logs out by destroying the temporary cookie
-    public function logout()
-    {
-        setcookie('username', '', time() - 3600, '/');
+    //logout user: destroy session data
+    public function logout() {
+        //destroy session data
+        setcookie("user", '', -10);
+        return true;
     }
 
-//password reset form
-    public function reset_password($username, $password, $newPass)
-    {
-        $username = filter_var($username, FILTER_SANITIZE_STRING);
-        //gets username and filters
-        $newPass = password_hash($newPass,PASSWORD_DEFAULT);
-        //gets the new password and hashes it
-        $sql = "SELECT * FROM $this->tblUsers WHERE username = '$username'";
-        //SQL query
+    //reset password
+    public function reset_password() {
+        //retrieve username and password from a form
+        $username = trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING));
+        $password = trim(filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING));
+
+        //hash the password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        //the sql statement for update
+        $sql = "UPDATE  " . $this->db->getUserTable() . " SET password='$hashed_password' WHERE username='$username'";
+
+        //execute the query
         $query = $this->dbConnection->query($sql);
-        //Sends query
-        if ($query->num_rows > 0) {
-            $user = $query->fetch_assoc();
-            //returns as associative array
-            if (password_verify($password, $user['password'])) {
-                //checks if password equals the password set in the SQL query
-                $sql = "UPDATE $this->tblUsers SET password = '$newPass' WHERE username='$username'";
-                //SQL query
-               return $this->dbConnection->query($sql);
-                //sends query
 
-            }
+        //return false if no rows were affected
+        if (!$query || $this->dbConnection->affected_rows == 0) {
 
+            return false;
         }
-        return false;
 
-
+        return true;
     }
-
 }

@@ -68,7 +68,7 @@ class UserController{
 
         $result = $this->user_model->reset_password();
         //exit($result);
-
+        // view display and reset confirmation
         $view = new ResetConfirm();
         $view->display($result);
     }
