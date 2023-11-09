@@ -7,9 +7,21 @@ namespace Composer\Autoload;
 class ComposerStaticInitd751713988987e9331980363e24189ce
 {
     public static $classMap = array (
+        'ComposerAutoloaderInitd751713988987e9331980363e24189ce' => __DIR__ . '/..' . '/composer/autoload_real.php',
+        'Composer\\Autoload\\ClassLoader' => __DIR__ . '/..' . '/composer/ClassLoader.php',
+        'Composer\\Autoload\\ComposerStaticInitd751713988987e9331980363e24189ce' => __DIR__ . '/..' . '/composer/autoload_static.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Database' => __DIR__ . '/../..' . '/application/database.class.php',
+        'Index' => __DIR__ . '/../..' . '/views/index/index.class.php',
+        'Login' => __DIR__ . '/../..' . '/views/login/login.class.php',
+        'Logout' => __DIR__ . '/../..' . '/views/logout/logout.class.php',
+        'Register' => __DIR__ . '/../..' . '/views/index/register.class.php',
+        'Reset' => __DIR__ . '/../..' . '/views/reset/reset.class.php',
+        'ResetConfirm' => __DIR__ . '/../..' . '/views/reset/reset_confirm.class.php',
+        'UserController' => __DIR__ . '/../..' . '/controllers/user_controller.class.php',
         'UserError' => __DIR__ . '/../..' . '/views/error/user_error.class.php',
+        'UserModel' => __DIR__ . '/../..' . '/models/user_model.class.php',
+        'Verify' => __DIR__ . '/../..' . '/views/login/verify_user.class.php',
         'View' => __DIR__ . '/../..' . '/views/view.class.php',
     );
 
