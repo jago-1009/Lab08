@@ -26,7 +26,7 @@ class UserModel
         //filters the Last Name value
         $password = password_hash($password, PASSWORD_DEFAULT);
         //hashes the password value
-        $sql = "INSERT INTO $this->tblUsers ($username,$password,$email,$fName,$lName)";
+        $sql = "INSERT INTO `users` (`id`, `username`, `password`, `email`, `firstname`, `lastname`) VALUES($username,$password,$email,$fName,$lName)";
         //SQL query
         $query = $this->dbConnection->query($sql);
         //sends the query
