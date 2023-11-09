@@ -34,14 +34,16 @@ class UserModel
             $this->verify_user($username, $password);
             //verifies the data using $username and $password
             return true;
+        } else {
+            return false;
         }
-        return false;
+
     }
 
 //verifies user against the database
     public function verify_user($username, $password)
     {
-        $username = filter_var($username, FILTER_SANITIZE_STRING);
+        $username = trim(filter_input($username, FILTER_SANITIZE_STRING));
         //filters the username variable again. extra security
         $sql = "SELECT * FROM $this->tblUsers WHERE username = '$username'";
         //SQL query
@@ -52,7 +54,7 @@ class UserModel
             //returns query as associative array
             if (password_verify($password, $user['password'])) {
 
-                setcookie('username', $username, time() + 3600, '/');
+                setcookie('username', $username);
                 return true;
             }
 
@@ -65,15 +67,15 @@ class UserModel
 //Logs out by destroying the temporary cookie
     public function logout()
     {
-        setcookie('username', '', time() - 3600, '/');
+        setcookie('username', '');
     }
 
 //password reset form
     public function reset_password($username, $password, $newPass)
     {
-        $username = filter_var($username, FILTER_SANITIZE_STRING);
+        $username = trim(filter_input($username, FILTER_SANITIZE_STRING));
         //gets username and filters
-        $newPass = password_hash($newPass,PASSWORD_DEFAULT);
+        $newPass = password_hash(trim(filter_input($newPass,PASSWORD_DEFAULT)));
         //gets the new password and hashes it
         $sql = "SELECT * FROM $this->tblUsers WHERE username = '$username'";
         //SQL query
@@ -82,7 +84,7 @@ class UserModel
         if ($query->num_rows > 0) {
             $user = $query->fetch_assoc();
             //returns as associative array
-            if (password_verify($password, $user['password'])) {
+            if (password_verify($newPass, $user['password'])) {
                 //checks if password equals the password set in the SQL query
                 $sql = "UPDATE $this->tblUsers SET password = '$newPass' WHERE username='$username'";
                 //SQL query
