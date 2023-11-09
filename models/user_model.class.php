@@ -86,9 +86,9 @@ class UserModel
                 //checks if password equals the password set in the SQL query
                 $sql = "UPDATE $this->tblUsers SET password = '$newPass' WHERE username='$username'";
                 //SQL query
-                $query = $this->dbConnection->query($sql);
+               return $this->dbConnection->query($sql);
                 //sends query
-                return true;
+
             }
 
         }
