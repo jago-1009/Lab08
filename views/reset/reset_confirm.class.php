@@ -10,12 +10,14 @@ class ResetConfirm extends View {
     public function display($result) {
         View::header();
 
+        //setting message to password reset result
         $message = $result ? "You have successfully reset your password." :
             "Your last attempt to reset password failed. Please try again.";
         ?>
 
         <div class="top-row">Reset password</div>
         <div class="middle-row">
+<!--            displaying message-->
             <p><?= $message ?></p>
         </div>
         <div class="bottom-row">

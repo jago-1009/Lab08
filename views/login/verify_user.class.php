@@ -2,17 +2,21 @@
 // Author: Nate Osborne
 // Date: 11/8/2023
 // File: verify_user.class.php
-// Description:
+// Description: Defines the Verify class
 
+//creating verify class
 class Verify extends View {
 // displaying a header by calling from the View class
+//creating display function by passing through the login result
     public function display($result) {
         parent::header();
 
+        //changing message based on login result
         $message = $result ? "You have successfully logged in." : "Your last attempt to login failed. Please try again.";
         ?>
         <div class="top-row">Login</div>
         <div class="middle-row">
+<!--            displaying message-->
             <p><?= $message ?></p>
         </div>
         <div class="bottom-row">
@@ -25,6 +29,7 @@ class Verify extends View {
                 }
                 ?>
             </span>
+            <!--        adding hyperlinks to other pages-->
             <span style="float: right">Reset password? <a href="index.php?action=reset">Reset</a></span>
         </div>
         <?php
