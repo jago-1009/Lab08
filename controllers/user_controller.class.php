@@ -7,9 +7,9 @@
 */
 
 class UserController{
-
+    // user model
     private $user_model;
-
+    // constructer
     public function __construct(){
         //creating an instance of the UserModel class
         $this->user_model = new UserModel();
@@ -57,6 +57,7 @@ class UserController{
         if (!isset($_COOKIE['user'])) {  //if the user has not logged in
             $this->error("To reset your password, please log in first.");
         } else { //if the user has logged in.
+            // cookie user
             $user = $_COOKIE['user'];
             $view = new Reset();
             $view->display($user);

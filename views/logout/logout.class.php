@@ -6,7 +6,7 @@
 
 //creating logout function
 class Logout extends View {
-
+// displaying a header by calling from the View class
     public function display() {
         parent::header();
         ?>
